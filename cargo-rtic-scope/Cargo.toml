@@ -11,8 +11,7 @@ readme = "../docs/profile/README.md"
 
 [dependencies]
 # Auxilliary
-structopt = "0.3"
-clap = "2.33"
+clap = { version = "3.0", features = ["derive"] }
 ctrlc = "3"
 thiserror = "1"
 colored = "2"
@@ -35,7 +34,7 @@ cortex-m = { version = "0.7", default-features = false, features = ["serde", "st
 
 # Probe support
 probe-rs = { version = "0.12", git = "https://github.com/ryan-summers/probe-rs.git", branch = "feature/dbgmcu-support" }
-probe-rs-cli-util = { git = "https://github.com/ryan-summers/probe-rs.git" }
+probe-rs-cli-util = { git = "https://github.com/ryan-summers/probe-rs.git" , branch = "feature/dbgmcu-support"}
 
 # TTY support
 nix = { version = "0.23", git = "https://github.com/rtic-scope/nix.git", branch = "feat/termios-linux-arbitrary" }

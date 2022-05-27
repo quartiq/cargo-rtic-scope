@@ -16,7 +16,7 @@ use probe_rs_cli_util::{
     flash,
 };
 use rtic_scope_api as api;
-use structopt::StructOpt;
+use clap::StructOpt;
 use thiserror::Error;
 
 mod build;
@@ -36,7 +36,7 @@ pub type TraceData = itm::TimestampedTracePackets;
 struct Opts {
     /// PATH, relative, or absolute path to the frontend(s) to forward
     /// recorded/replayed trace to. Tested in that order.
-    #[structopt(long = "frontend", short = "-F", default_value = "dummy")]
+    #[structopt(long = "frontend", short = 'F', default_value = "dummy")]
     frontends: Vec<String>,
 
     #[structopt(subcommand)]
@@ -58,7 +58,7 @@ struct TraceOptions {
     trace_dir: Option<PathBuf>,
 
     /// Arbitrary comment that describes the trace.
-    #[structopt(long = "comment", short = "c")]
+    #[structopt(long = "comment", short = 'c')]
     comment: Option<String>,
 
     /// Remove all previous traces from <trace-dir>.
@@ -112,14 +112,14 @@ pub struct ManifestOptions {
 /// Replay a previously recorded trace stream for post-mortem analysis.
 #[derive(StructOpt, Debug)]
 struct ReplayOptions {
-    #[structopt(name = "list", long = "list", short = "l")]
+    #[structopt(name = "list", long = "list", short = 'l')]
     list: bool,
 
     /// Relative path to trace file to replay.
     #[structopt(name = "trace-file", long = "trace-file")]
     trace_file: Option<PathBuf>,
 
-    #[structopt(required_unless_one(&["list", "raw-file", "trace-file"]))]
+    #[structopt(required_unless_present_any(&["list", "raw-file", "trace-file"]))]
     index: Option<usize>,
 
     #[structopt(flatten)]
@@ -141,7 +141,7 @@ struct RawFileOptions {
     #[structopt(name = "raw-file", long = "raw-file", requires("virtual-freq"))]
     file: Option<PathBuf>,
 
-    #[structopt(long = "comment", short = "c", hidden = true)]
+    #[structopt(long = "comment", short = 'c', hide = true)]
     comment: Option<String>,
     #[structopt(flatten)]
     pac: ManifestOptions,
@@ -236,10 +236,7 @@ async fn main_try() -> Result<(), RTICScopeError> {
     if args.get(1) == Some(&"rtic-scope".to_string()) {
         args.remove(1);
     }
-    let matches = Opts::clap()
-        .after_help(CargoOptions::help_message("cargo rtic-scope trace").as_str())
-        .get_matches_from(&args);
-    let opts = Opts::from_clap(&matches);
+    let opts = Opts::parse();
 
     // Should we quit early?
     if let Command::Trace(opts) = &opts.cmd {
@@ -587,8 +584,8 @@ where
             match data {
                 packet @ Ok(_) => tx.send(Some(packet)).unwrap(),
                 err @ Err(_) => {
-                    tx.send(Some(err)).unwrap();
-                    break;
+                    //tx.send(Some(err)).unwrap();
+                    //break;
                 }
             }
         }
