@@ -1,7 +1,6 @@
 [workspace]
 members = [
         "cargo-rtic-scope",
-        "cortex-m-rtic-trace",
         "rtic-scope-api",
         "rtic-scope-frontend-dummy"
 ]
